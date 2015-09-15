@@ -1,5 +1,19 @@
 
-
+var itemstojson=function(obj){ //json friendly to github diff
+	var out="";
+	if (Array.isArray(obj)) {
+		for (var i in obj) {
+			out+="\n"+JSON.stringify(obj[i])+",";
+		}		
+		return '['+out.substr(0,out.length-1)+'\n]';
+	} else {
+		for (var i in obj) {
+			out+='\n"'+i+'":'+JSON.stringify(obj[i])+",";
+		}		
+		return '{'+out.substr(0,out.length-1)+'\n}';
+	}
+	
+}
 var serialize=function(meta,text,history,markups) {
 	if (typeof text !=="string") {
 		var cm=text;
@@ -8,16 +22,20 @@ var serialize=function(meta,text,history,markups) {
 		history=doc.getHistory().done;
 		markups=require("./markups").extractMarkups(doc);
 	}
-	var middle=JSON.stringify({markups:markups,history:history},""," ")+"\n";
-	meta.textstart="0x00000000";//fix length
+	var aux="{"
+		+'"markups":'+itemstojson(markups)
+		+'\n,"history":'+itemstojson(history)
+		+"\n}";
+
+	meta.textsize="0x00000000";//fix length
 
 	var metastr=JSON.stringify(meta)+"\n";
-	var textstart=middle.length+metastr.length;
-	var start="00000000"+textstart.toString(16);
-	meta.textstart="0x"+start.substr(start.length-8);
+	var textsize=text.length;
+	var size="00000000"+textsize.toString(16);
+	meta.textsize="0x"+size.substr(size.length-8);
 	var metastr=JSON.stringify(meta)+"\n";
 
-	return metastr+middle+text;
+	return metastr+text+aux;
 }
 
 var parseFile=function(buffer) {
@@ -26,14 +44,14 @@ var parseFile=function(buffer) {
 
 	try {
 		var meta=JSON.parse(buffer.substr(0,idx).trim());
-		meta.textstart = parseInt(meta.textstart);
-		var middle=JSON.parse(buffer.substring(idx+1,meta.textstart)) ;
+		meta.textsize = parseInt(meta.textsize);
+		var aux=JSON.parse(buffer.substring(idx+1+meta.textsize)) ;
 	} catch(e) {
 		console.log(e);
 		return null;
 	}
 
-	return {meta:meta, history: middle.history, markups:middle.markups, value:buffer.substr(meta.textstart)};
+	return {meta:meta, history: aux.history, markups:aux.markups, value:buffer.substr(idx+1,meta.textsize)};
 }
 var deserialize=function(buffer) {
 	var parts=parseFile(buffer);
