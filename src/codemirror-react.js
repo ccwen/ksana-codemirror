@@ -1,4 +1,5 @@
 var CM = require('codemirror');
+require('codemirror/addon/display/panel');
 //require('codemirror/addon/selection/active-line');
 var React = require('react');
 var E=React.createElement;
@@ -34,7 +35,7 @@ var CodeMirror = React.createClass({
 		this.codeMirror = CM(textareaNode, {
   		value: this.props.value,
   		mode:  "javascript",
-  		inputStyle:"contenteditable",
+  		//inputStyle:"contenteditable",
   		styleActiveLine:true,
   		lineNumbers: true,
   		undoDepth: Infinity,
@@ -45,6 +46,7 @@ var CodeMirror = React.createClass({
   		}
 		});
 
+
 		//CM.fromTextArea(textareaNode, this.props.options);
 		if (this.props.onBeforeCopy) this.codeMirror.on('beforeCopyToClipboard', this.props.onBeforeCopy);
 		this.codeMirror.on('change', this.codemirrorValueChanged);
@@ -53,13 +55,21 @@ var CodeMirror = React.createClass({
 		this.codeMirror.on('blur', this.focusChanged.bind(this, false));
 		this.codeMirror.on('cursorActivity',this.cursorActivity);
 		this._currentCodemirrorValue = this.props.value;
+
+		this.props.markups&&applyMarkups(this.codeMirror,this.props.markups)
 	},
 
 	componentWillUnmount:function () {
 		// todo: is there a lighter-weight way to remove the cm instance?
-		if (this.codeMirror) {
+		if (this.codeMirror&& this.codeMirror.toTextArea) {
 			this.codeMirror.toTextArea();
 		}
+	},
+
+	shouldComponentUpdate:function(nextProps) {
+		var update= (nextProps.value!==this.props.value || nextProps.history!==this.props.history 
+				||nextProps.markups!==this.props.markups);
+		return update;
 	},
 
 	componentWillReceiveProps:function (nextProps) {
