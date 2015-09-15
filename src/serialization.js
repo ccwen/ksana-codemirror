@@ -44,8 +44,9 @@ var parseFile=function(buffer) {
 
 	try {
 		var meta=JSON.parse(buffer.substr(0,idx).trim());
-		meta.textsize = parseInt(meta.textsize);
-		var aux=JSON.parse(buffer.substring(idx+1+meta.textsize)) ;
+		meta.textsize = parseInt(meta.textsize) || buffer.length-(idx+1); //for new ktx file
+		var aux=buffer.substring(idx+1+meta.textsize);
+		aux=aux?JSON.parse(aux):{};
 	} catch(e) {
 		console.log(e);
 		return null;
