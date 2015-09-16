@@ -49,12 +49,11 @@ var CodeMirror = React.createClass({
 
 		//CM.fromTextArea(textareaNode, this.props.options);
 		if (this.props.onBeforeCopy) this.codeMirror.on('beforeCopyToClipboard', this.props.onBeforeCopy);
-		this.codeMirror.on('change', this.codemirrorValueChanged);
+		this.codeMirror.getDoc().on('change', this.props.onChange);
 		if (this.props.onBeforeChange) this.codeMirror.on('beforeChange', this.props.onBeforeChange);
 		this.codeMirror.on('focus', this.focusChanged.bind(this, true));
 		this.codeMirror.on('blur', this.focusChanged.bind(this, false));
 		this.codeMirror.on('cursorActivity',this.cursorActivity);
-		this._currentCodemirrorValue = this.props.value;
 
 		this.props.markups&&applyMarkups(this.codeMirror,this.props.markups)
 	},
@@ -74,12 +73,8 @@ var CodeMirror = React.createClass({
 
 	componentWillReceiveProps:function (nextProps) {
 		if (this.codeMirror) {
-			if (this._currentCodemirrorValue !== nextProps.value) {
-				this.codeMirror.setValue(nextProps.value);
-			}
 
 			if (this.props.history !== nextProps.history) {
-				console.log("history changed")
 				//this.codeMirror.setHistory(nextProps.history);
 			}
 
@@ -118,11 +113,7 @@ var CodeMirror = React.createClass({
 		this.props.onFocusChange && this.props.onFocusChange(focused);
 	},
 
-	codemirrorValueChanged:function (doc, change) {
-		var newValue = doc.getValue();
-		this._currentCodemirrorValue = newValue;
-		this.props.onChange && this.props.onChange(newValue);
-	},
+
 
 	render:function () {
 		return E("span",{ref:"editor"});
