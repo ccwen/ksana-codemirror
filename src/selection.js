@@ -4,17 +4,20 @@ var getSelections=function(doc) {
 
 	for (var i=0;i<sels.length;i++) {
 		var sel=sels[i];
-		if (sel.anchor===sel.head) continue;
 		var to=[sel.anchor.ch,sel.anchor.line];
 		var from=[sel.head.ch,sel.head.line];
+		if (sel.anchor===sel.head) {
+			out.push([from]);//cursor only
+		} else {
+			if ((from[1]==to[1]&& from[0]>to[0]) || (from[1]>to[1])) {
+				t=from;
+				from=to;
+				to=t;
+			}
 
-		if (!((from[1]==to[1]&& from[0]>to[0]) || (from[1]>to[1]))) {
-			t=from;
-			from=to;
-			to=t;
+			out.push([from,to]);			
 		}
 
-		out.push([from,to]);
 	}
 	return out;
 }
