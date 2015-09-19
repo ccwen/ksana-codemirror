@@ -25,11 +25,13 @@ var applyMarkups=function(cm,markups,clear) {
 		}
 		delete m.from;
 		delete m.to;
+
 		for (var i in m) {
 			if (reservedfields[i]) delete m[i];
 		}
 		m.key=key; //probably from firebase uid
-		cm.markText({line:fromline,ch:fromch},{line:toline,ch:toch}, m );
+		m.handle=cm.markText({line:fromline,ch:fromch},{line:toline,ch:toch}, m );
+		
 	}
 }
 
