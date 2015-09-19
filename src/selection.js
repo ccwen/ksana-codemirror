@@ -6,7 +6,7 @@ var getSelections=function(doc) {
 		var sel=sels[i];
 		var to=[sel.anchor.ch,sel.anchor.line];
 		var from=[sel.head.ch,sel.head.line];
-		if (sel.anchor===sel.head) {
+		if (JSON.stringify(sel.anchor)===JSON.stringify(sel.head)) {
 			out.push([from]);//caret pos only
 		} else {
 			if ((from[1]==to[1]&& from[0]>to[0]) || (from[1]>to[1])) {
