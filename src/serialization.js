@@ -38,12 +38,21 @@ var serialize=function(meta,text,history,markups) {
 	return metastr+text+aux;
 }
 
-var parseFile=function(buffer) {
+var parseFile=function(buffer,defaulttitle) {
 	var idx=buffer.indexOf("\n");
-	if (idx===-1) return null;
+	if (idx==-1) {
+		//only one line
+		idx=buffer.length;
+	}
+
+	var firstline=buffer.substr(0,idx).trim();
+	if (firstline[0]!=="{") {//assuming a pure text
+		firstline='{"title":"'+defaulttitle+'"}';
+		idx=-1;
+	}
 
 	try {
-		var meta=JSON.parse(buffer.substr(0,idx).trim());
+		var meta=JSON.parse(firstline);
 		meta.textsize = parseInt(meta.textsize) || buffer.length-(idx+1); //for new ktx file
 		var aux=buffer.substring(idx+1+meta.textsize);
 		aux=aux?JSON.parse(aux):{};
@@ -54,8 +63,14 @@ var parseFile=function(buffer) {
 
 	return {meta:meta, history: aux.history, markups:aux.markups, value:buffer.substr(idx+1,meta.textsize)};
 }
-var deserialize=function(buffer) {
-	var parts=parseFile(buffer);
+var deserialize=function(buffer,filename) {
+	var defaulttitle=filename.substr(0,filename.lastIndexOf("."));
+	var idx=defaulttitle.lastIndexOf("/");
+	if (idx>0) defaulttitle = defaulttitle.substr(idx+1);
+	idx=defaulttitle.lastIndexOf("\\");
+	if (idx>0) defaulttitle = defaulttitle.substr(idx+1);
+
+	var parts=parseFile(buffer,defaulttitle);
 	if (!parts) return null;
 
 	//convert markups pointer
