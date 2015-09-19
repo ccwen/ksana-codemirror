@@ -10,8 +10,8 @@ var clearAllMarks=function(doc){
 		marks[i].clear();
 	}
 }
-var applyMarkups=function(cm,markups) {
-	clearAllMarks(cm.getDoc());
+var applyMarkups=function(cm,markups,clear) {
+	if (clear) clearAllMarks(cm.getDoc());
 	for (var key in markups) {
 		var m=markups[key];
 		var fromch=m.from[0],fromline=m.from[1];
