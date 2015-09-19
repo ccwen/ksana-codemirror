@@ -14,6 +14,7 @@ var applyMarkups=function(cm,markups,clear) {
 	if (clear) clearAllMarks(cm.getDoc());
 	for (var key in markups) {
 		var m=markups[key];
+		if (!m.from) continue; //already in view
 		var fromch=m.from[0],fromline=m.from[1];
 		if (typeof m.to==="number") {
 			toch=m.to;
