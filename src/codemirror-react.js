@@ -55,7 +55,9 @@ var CodeMirror = React.createClass({
 		this.codeMirror.on('blur', this.focusChanged.bind(this, false));
 		this.codeMirror.on('cursorActivity',this.cursorActivity);
 
-		this.props.markups&&applyMarkups(this.codeMirror,this.props.markups,true);
+		setTimeout(function(){
+			this.props.markups&&applyMarkups(this.codeMirror,this.props.markups,true);
+		}.bind(this),30);//need to wait for this.codeMirror.react ready (dirty hack)
 	},
 
 	componentWillUnmount:function () {

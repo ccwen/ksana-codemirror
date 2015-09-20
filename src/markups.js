@@ -2,7 +2,8 @@
 	put markups into CodeMirror
 	do not use markups after this call
 */
-var reservedfields={doc:true,lines:true,type:true,id:true,key:true}; //don't know id exists
+var reservedfields={doc:true,lines:true,type:true,id:true,key:true,replacedWith:true
+	,clearWhenEmpty:true,collapsed:true,widgetNode:true,atomic:true,handle:true}; //don't know id exists
 
 var clearAllMarks=function(doc){
 	var marks=doc.getAllMarks();
@@ -10,12 +11,30 @@ var clearAllMarks=function(doc){
 		marks[i].clear();
 	}
 }
+
+var applyBookmark=function(cm,bookmark) {
+	var func="bookmark_"+bookmark.className;
+	if (cm.react && cm.react[func]) {
+		cm.getDoc().setCursor({line:bookmark.from[1] ,ch:bookmark.from[0]});
+		return cm.react[func].call(cm.react,bookmark);
+	}
+	return null;
+}
+
 var applyMarkups=function(cm,markups,clear) {
 	if (clear) clearAllMarks(cm.getDoc());
 	for (var key in markups) {
 		var m=markups[key];
-		if (!m.from) continue; //already in view
+		if (m.handle) continue; //already in view
 		var fromch=m.from[0],fromline=m.from[1];
+
+		if (typeof m.to==="undefined") {
+			m.key=key;
+			m.handle=applyBookmark( cm,m);
+			delete m.from;
+			continue;
+		}
+
 		if (typeof m.to==="number") {
 			toch=m.to;
 			toline=fromline;
@@ -30,14 +49,21 @@ var applyMarkups=function(cm,markups,clear) {
 			if (reservedfields[i]) delete m[i];
 		}
 		m.key=key; //probably from firebase uid
-		m.handle=cm.markText({line:fromline,ch:fromch},{line:toline,ch:toch}, m );
-		
+		m.handle=cm.markText({line:fromline,ch:fromch},{line:toline,ch:toch}, m );		
 	}
 }
 
 /**
 	extract markups from CodeMirror
 */
+var extractBookmark=function(textmarker, pos) {
+	var out={from:[pos.ch,pos.line]};
+	for (var i in textmarker) {
+		if (typeof textmarker[i]==="function") continue;
+		if (!reservedfields[i]) out[i]=textmarker[i];
+	}
+	return out;
+}
 var extractMarkups=function(doc) {
 	var marks=doc.getAllMarks();
 	var markups={};
@@ -46,9 +72,13 @@ var extractMarkups=function(doc) {
 		var obj={};
 		var m=marks[i];
 		var pos=m.find();
-		obj.from=[pos.from.ch,pos.from.line];
-		obj.to=pos.to.ch;
-		if (pos.from.line!==pos.to.line) to=[to,pos.to.line];
+		if (m.type==="bookmark") {
+			obj=extractBookmark(m,pos);
+		} else {
+			obj.from=[pos.from.ch,pos.from.line];
+			obj.to=pos.to.ch;
+			if (pos.from.line!==pos.to.line) to=[to,pos.to.line];
+		}
 		markups[m.key]=obj;
 
 		for (var key in m) {
