@@ -71,7 +71,7 @@ var extractMarkups=function(doc) {
 	for (var i=0;i<marks.length;i++) {
 		var obj={};
 		var m=marks[i];
-		if (m.clearWhenEmpty) continue; //temporary markup will not be saved
+		if (m.clearOnEnter) continue; //temporary markup will not be saved
 		var pos=m.find();
 		if (m.type==="bookmark") {
 			obj=extractBookmark(m,pos);
