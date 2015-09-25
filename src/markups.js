@@ -77,8 +77,12 @@ var extractMarkups=function(doc) {
 			obj=extractBookmark(m,pos);
 		} else {
 			obj.from=[pos.from.ch,pos.from.line];
-			obj.to=pos.to.ch;
-			if (pos.from.line!==pos.to.line) to=[to,pos.to.line];
+			if (pos.to) {
+				obj.to=pos.to.ch;
+				if (pos.from.line!==pos.to.line) to=[to,pos.to.line];
+			} else {
+				console.error("markup missing to");
+			}
 		}
 		markups[m.key]=obj;
 

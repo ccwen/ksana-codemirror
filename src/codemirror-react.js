@@ -1,5 +1,10 @@
 var CM = require('codemirror');
 require('codemirror/addon/display/panel');
+require('codemirror/addon/search/search.js');
+require('codemirror/addon/search/goto-line.js');
+require('codemirror/addon/search/searchcursor.js');
+require('codemirror/addon/dialog/dialog.js');
+
 //require('codemirror/addon/selection/active-line');
 var React = require('react');
 var E=React.createElement;
@@ -45,7 +50,6 @@ var CodeMirror = React.createClass({
   			return line;
   		}
 		});
-
 
 		//CM.fromTextArea(textareaNode, this.props.options);
 		if (this.props.onBeforeCopy) this.codeMirror.on('beforeCopyToClipboard', this.props.onBeforeCopy);
