@@ -25,30 +25,30 @@ var CodeMirror = React.createClass({
 		value: React.PropTypes.string,
 		onBeforeCopy:React.PropTypes.func
 	}
-
+	,milestones:{}
 	,getInitialState:function () {
 		return {
 			isFocused: false
 		};
-	},
-	cursorActivity:function(cm) { 
+	}
+	,cursorActivity:function(cm) { 
 		this.props.onCursorActivity&&this.props.onCursorActivity(cm);
 	}
 	,componentDidMount:function () {
 		var textareaNode = React.findDOMNode(this.refs.editor);
-
+		var lineNumberFormatter=this.props.lineNumberFormatter||function(line){return line};
 		this.codeMirror = CM(textareaNode, {
-  		value: this.props.value,
-  		mode:  "javascript",
+  		value: this.props.value
+  		//,mode:  "javascript"
   		//inputStyle:"contenteditable",
-  		styleActiveLine:true,
-  		lineNumbers: true,
-  		undoDepth: Infinity,
-  		lineWrapping:true,
-  		gutters: ["CodeMirror-linenumbers"]
-  		,lineNumberFormatter:function(line) {
-  			return line;
-  		}
+  		,styleActiveLine:true
+  		,undoDepth: Infinity
+  		,lineWrapping:true
+  		
+  		,lineNumbers: true
+  		,gutters: ["CodeMirror-linenumbers"]
+  		,lineNumberFormatter:lineNumberFormatter
+
 		});
 
 		//CM.fromTextArea(textareaNode, this.props.options);
@@ -61,6 +61,7 @@ var CodeMirror = React.createClass({
 
 		setTimeout(function(){
 			this.props.markups&&applyMarkups(this.codeMirror,this.props.markups,true);
+			this.props.onMarkupReady&&this.props.onMarkupReady(this.codeMirror);
 		}.bind(this),30);//need to wait for this.codeMirror.react ready (dirty hack)
 	},
 
@@ -118,8 +119,6 @@ var CodeMirror = React.createClass({
 		this.setState({isFocused: focused});
 		this.props.onFocusChange && this.props.onFocusChange(focused);
 	},
-
-
 
 	render:function () {
 		return E("span",{ref:"editor"});
