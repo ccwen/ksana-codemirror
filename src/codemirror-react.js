@@ -1,9 +1,10 @@
 var CM = require('codemirror');
 require('codemirror/addon/display/panel');
 require('codemirror/addon/search/search.js');
-require('codemirror/addon/search/goto-line.js');
 require('codemirror/addon/search/searchcursor.js');
 require('codemirror/addon/dialog/dialog.js');
+
+require('codemirror/addon/search/automarkup.js');
 
 //require('codemirror/addon/selection/active-line');
 var React = require('react');
@@ -14,7 +15,7 @@ var applyMarkups=require("./markups").applyMarkups;
 var randomKey=function() {
 	return 'm'+Math.random().toString().substr(2,5);
 }
-var CodeMirror = React.createClass({
+var CodeMirrorComponent = React.createClass({
 	displayName :"CodeMirror"
 	,propTypes: {
 		onChange: React.PropTypes.func,
@@ -126,4 +127,4 @@ var CodeMirror = React.createClass({
 
 });
 
-module.exports = CodeMirror;
+module.exports = CodeMirrorComponent;

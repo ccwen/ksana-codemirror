@@ -4,5 +4,7 @@ module.exports={
 	deserialize:serialization.deserialize,
 	getSelections:require("./selection").getSelections,
 	getCharAtCursor:require("./selection").getCharAtCursor,
-	CodeMirror:require("./codemirror-react")
+	CodeMirror:require("codemirror"),
+	Component:require("./codemirror-react")
+	
 };
