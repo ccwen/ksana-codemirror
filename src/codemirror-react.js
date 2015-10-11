@@ -5,7 +5,7 @@ require('codemirror/addon/search/searchcursor.js');
 require('codemirror/addon/dialog/dialog.js');
 
 require('codemirror/addon/search/automarkup.js');
-
+var milestones=require("./milestones");
 //require('codemirror/addon/selection/active-line');
 var React = require('react');
 var ReactDOM = require('react-dom');
@@ -27,7 +27,6 @@ var CodeMirrorComponent = React.createClass({
 		value: React.PropTypes.string,
 		onBeforeCopy:React.PropTypes.func
 	}
-	,milestones:{}
 	,getInitialState:function () {
 		return {
 			isFocused: false
@@ -38,7 +37,6 @@ var CodeMirrorComponent = React.createClass({
 	}
 	,componentDidMount:function () {
 		var textareaNode = ReactDOM.findDOMNode(this.refs.editor);
-		var lineNumberFormatter=this.props.lineNumberFormatter||function(line){return line};
 		this.codeMirror = CM(textareaNode, {
   		value: this.props.value
   		//,mode:  "javascript"
@@ -49,8 +47,10 @@ var CodeMirrorComponent = React.createClass({
   		,readOnly:!!this.props.readOnly
   		,lineNumbers: true
   		,gutters: ["CodeMirror-linenumbers"]
-  		,lineNumberFormatter:lineNumberFormatter
+  		
 		});
+
+		this.codeMirror.setOption("lineNumberFormatter",milestones.lineNumberFormatter.bind(this));
 
 		//CM.fromTextArea(textareaNode, this.props.options);
 		if (this.props.onBeforeCopy) this.codeMirror.on('beforeCopyToClipboard', this.props.onBeforeCopy);

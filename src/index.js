@@ -5,6 +5,7 @@ module.exports={
 	getSelections:require("./selection").getSelections,
 	getCharAtCursor:require("./selection").getCharAtCursor,
 	CodeMirror:require("codemirror"),
-	Component:require("./codemirror-react")
+	Component:require("./codemirror-react"),
+	milestones:require("./milestones")
 	
 };
