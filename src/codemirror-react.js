@@ -46,11 +46,10 @@ var CodeMirrorComponent = React.createClass({
   		,styleActiveLine:true
   		,undoDepth: Infinity
   		,lineWrapping:true
-  		
+  		,readOnly:!!this.props.readOnly
   		,lineNumbers: true
   		,gutters: ["CodeMirror-linenumbers"]
   		,lineNumberFormatter:lineNumberFormatter
-
 		});
 
 		//CM.fromTextArea(textareaNode, this.props.options);

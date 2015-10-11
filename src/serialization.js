@@ -19,13 +19,14 @@ var serialize=function(meta,text,history,markups) {
 		var cm=text;
 		var doc=cm.getDoc();
 		text=doc.getValue();
-		history=doc.getHistory().done;
+		history=meta.readOnly?[]:doc.getHistory().done;
 		markups=require("./markups").extractMarkups(doc);
 	}
-	var aux="{"
-		+'"markups":'+itemstojson(markups)
-		+'\n,"history":'+itemstojson(history)
-		+"\n}";
+	var aux="{"+'"markups":'+itemstojson(markups);
+
+	if (meta.saveHistory)	aux+='\n,"history":'+itemstojson(history);
+		
+	aux+="\n}";
 
 	meta.textsize="0x00000000";//fix length
 
