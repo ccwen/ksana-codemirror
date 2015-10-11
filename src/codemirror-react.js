@@ -8,6 +8,7 @@ require('codemirror/addon/search/automarkup.js');
 
 //require('codemirror/addon/selection/active-line');
 var React = require('react');
+var ReactDOM = require('react-dom');
 var E=React.createElement;
 
 var applyMarkups=require("./markups").applyMarkups;
@@ -36,7 +37,7 @@ var CodeMirrorComponent = React.createClass({
 		this.props.onCursorActivity&&this.props.onCursorActivity(cm);
 	}
 	,componentDidMount:function () {
-		var textareaNode = React.findDOMNode(this.refs.editor);
+		var textareaNode = ReactDOM.findDOMNode(this.refs.editor);
 		var lineNumberFormatter=this.props.lineNumberFormatter||function(line){return line};
 		this.codeMirror = CM(textareaNode, {
   		value: this.props.value
