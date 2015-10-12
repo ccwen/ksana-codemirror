@@ -26,15 +26,16 @@ var buildMilestone=function(doc,markups) {
 	line2milestone.sort(function(a,b){
 		return a[0]-b[0];
 	});
-	return {name2milestone:name2milestone,line2milestone:line2milestone};
+	doc.name2milestone=name2milestone;
+	doc.line2milestone=line2milestone;
 }
 var abs2milestone=function(line) {
 
 	var idx=findMilestone(this.line2milestone,line,true)-1;
-	if (idx<0||idx>=this.line2milestone.length) return line;
+	if (idx<0||idx>=this.line2milestone.length) return [line];
 	var ms=this.line2milestone[idx];
-	if (line===ms[0]) return line; //fix line before first milestone = -1
-	return (line-ms[0]-1);
+	if (line===ms[0]) return [line]; //fix line before first milestone = -1
+	return [(line-ms[0]-1),ms[1]]; //  [line offset, milestone_caption]
 }
 
 var milestone2abs=function( name, offsetline) {
@@ -49,33 +50,46 @@ var milestone2abs=function( name, offsetline) {
 var lineNumberFormatter=function(line){
 	var doc=this.codeMirror.getDoc();
 	if (!doc) return "";
-	if (!this.codeMirror.line2milestone || !this.codeMirror.line2milestone.length)return line;
-	var ms=abs2milestone.call(doc.getEditor(),line);
+	if (!doc.line2milestone || !doc.line2milestone.length)return line;
+	var ms=abs2milestone.call(doc,line)[0];
 	return ms;
 }
 
-var unpack=function(arr) {
+var unpack=function(r) {
 	var o=[];
-	if (arr.length!==2)return o;
-	o[0]=[arr[0][0],arr[0][1]];
-	o[1]=[arr[1][0],arr[1][1]];
+	if (r.length!==2)return r;
+	if (typeof r[1]==="number") r[1]=[r[1]];
+	o[0]=[r[0][0],r[0][1]];
+	o[1]=[r[1][0],r[1][1]];
 
-	if (typeof arr[0][2]==="string") {
-		o[0][1] = milestone2abs.call(this,arr[0][2],arr[0][1]);
+	if (typeof r[0][2]==="string") {
+		o[0][1] = milestone2abs.call(this,r[0][2],r[0][1]);
 	}
 
-	if (typeof arr[1][2]==="string") {
-		o[1][1] = milestone2abs.call(this,arr[1][2],arr[1][1]);
+	if (typeof r[1][2]==="string") {
+		o[1][1] = milestone2abs.call(this,r[1][2],r[1][1]);
 	}
 
-	if (arr[1].length==1) {//same line
+	if (r[1].length==1) {//same line
 		o[1][1]=o[0][1];
 	}
 	return o;
 }
 
-var pack=function(arr) {
+var pack=function(r) {
+	var o=[];
+	if (r.length!==2)return r;
+	if (typeof r[0][2]==="string") return r; //already pack
 
+	o[0]=[r[0][0]].concat(abs2milestone.call(this,r[0][1]+1));
+
+	if (r[1][1]===r[0][1]) {
+		o[1]=r[1][0]; //same line
+	} else {
+		o[1]=[r[1][0]].concat(abs2milestone.call(this,r[1][1]+1));	
+	}
+	
+	return o;
 }
 module.exports={lineNumberFormatter:lineNumberFormatter,findMilestone:findMilestone,
 	abs2milestone:abs2milestone,buildMilestone:buildMilestone,unpack:unpack,pack:pack};
