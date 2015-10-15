@@ -1,6 +1,6 @@
 {
-  "name": "kasna-codemirror",
-  "version": "5.6.0",
+  "name": "ksana-codemirror",
+  "version": "5.6.1",
   "main": "src/index.js",
   "description": "",
   "license": "MIT",
