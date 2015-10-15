@@ -4,7 +4,7 @@ require('codemirror/addon/search/search.js');
 require('codemirror/addon/search/searchcursor.js');
 require('codemirror/addon/dialog/dialog.js');
 
-require('codemirror/addon/search/automarkup.js');
+require('./automarkup.js');
 var milestones=require("./milestones");
 //require('codemirror/addon/selection/active-line');
 var React = require('react');
