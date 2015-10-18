@@ -88,7 +88,7 @@ var extractMarkups=function(doc) {
 
 		for (var key in m) {
 			if (!m.hasOwnProperty(key))continue;
-			if (!reservedfields[key]) {
+			if (!reservedfields[key] && key[0]!=="_") { //key start with _ will not saved
 				obj[key]=m[key];
 			}
 		}
