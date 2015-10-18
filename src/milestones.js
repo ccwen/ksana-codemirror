@@ -32,9 +32,9 @@ var buildMilestone=function(doc,markups) {
 var abs2milestone=function(line) {
 
 	var idx=findMilestone(this.line2milestone,line,true)-1;
-	if (idx<0||idx>=this.line2milestone.length) return [line];
+	if (idx<0||idx>=this.line2milestone.length) return [line-1];
 	var ms=this.line2milestone[idx];
-	if (line===ms[0]) return [line]; //fix line before first milestone = -1
+	if (line===ms[0]) return [line-1]; //fix line before first milestone = -1
 	return [(line-ms[0]-1),ms[1]]; //  [line offset, milestone_caption]
 }
 
@@ -50,7 +50,7 @@ var milestone2abs=function( name, offsetline) {
 var lineNumberFormatter=function(line){
 	var doc=this.codeMirror.getDoc();
 	if (!doc) return "";
-	if (!doc.line2milestone || !doc.line2milestone.length)return line;
+	if (!doc.line2milestone || !doc.line2milestone.length)return line-1;
 	var ms=abs2milestone.call(doc,line)[0];
 	return ms;
 }
