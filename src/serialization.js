@@ -18,7 +18,7 @@ var serialize=function(meta,text,history,markups) {
 	if (typeof text !=="string") {
 		var cm=text;
 		var doc=cm.getDoc();
-		text=doc.getValue();
+		text=doc.getValue().replace(/\r?\n/g,"\n");
 		history=meta.readOnly?[]:doc.getHistory().done;
 		markups=require("./markups").extractMarkups(doc);
 	}
@@ -40,6 +40,7 @@ var serialize=function(meta,text,history,markups) {
 }
 
 var parseFile=function(buffer,defaulttitle) {
+	buffer=buffer.replace(/\r?\n/g,"\n");
 	var idx=buffer.indexOf("\n");
 	if (idx==-1) {
 		//only one line

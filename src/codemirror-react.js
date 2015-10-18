@@ -59,27 +59,32 @@ var CodeMirrorComponent = React.createClass({
 		this.codeMirror.on('focus', this.focusChanged.bind(this, true));
 		this.codeMirror.on('blur', this.focusChanged.bind(this, false));
 		this.codeMirror.on('cursorActivity',this.cursorActivity);
+		this.codeMirror.on('mousedown',this.onMouseDown);
 
 		setTimeout(function(){
 			this.props.markups&&applyMarkups(this.codeMirror,this.props.markups,true);
 			this.props.onMarkupReady&&this.props.onMarkupReady(this.codeMirror);
 		}.bind(this),30);//need to wait for this.codeMirror.react ready (dirty hack)
-	},
+	}
 
-	componentWillUnmount:function () {
+	,componentWillUnmount:function () {
 		// todo: is there a lighter-weight way to remove the cm instance?
 		if (this.codeMirror&& this.codeMirror.toTextArea) {
 			this.codeMirror.toTextArea();
 		}
-	},
+	}
 
-	shouldComponentUpdate:function(nextProps) {
+	,onMouseDown:function(cm,e) {
+		this.props.onMouseDown&&this.props.onMouseDown(cm,e);
+	}
+
+	,shouldComponentUpdate:function(nextProps) {
 		var update= (nextProps.value!==this.props.value || nextProps.history!==this.props.history 
 				||nextProps.markups!==this.props.markups);
 		return update;
-	},
+	}
 
-	componentWillReceiveProps:function (nextProps) {
+	,componentWillReceiveProps:function (nextProps) {
 		if (this.codeMirror) {
 
 			if (this.props.history !== nextProps.history) {
@@ -90,13 +95,13 @@ var CodeMirrorComponent = React.createClass({
 				nextProps.markups&&applyMarkups(this.codeMirror,nextProps.markups);
 			}
 		}
-	},
+	}
 
-	getCodeMirror:function () {
+	,getCodeMirror:function () {
 		return this.codeMirror;
-	},
+	}
 
-	markText:function(opts) {
+	,markText:function(opts) {
 		var doc=this.codeMirror.getDoc();
 		var selections=doc.listSelections();
 		
@@ -108,20 +113,20 @@ var CodeMirrorComponent = React.createClass({
 			}
 			this.codeMirror.markText(sel.anchor,sel.head, opts );	
 		}
-	},
+	}
 
-	focus:function () {
+	,focus:function () {
 		if (this.codeMirror) {
 			this.codeMirror.focus();
 		}
-	},
+	}
 
-	focusChanged:function (focused) {
+	,focusChanged:function (focused) {
 		this.setState({isFocused: focused});
 		this.props.onFocusChange && this.props.onFocusChange(focused);
-	},
+	}
 
-	render:function () {
+	,render:function () {
 		return E("span",{ref:"editor"});
 	}
 
