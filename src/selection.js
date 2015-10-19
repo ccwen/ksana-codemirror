@@ -41,7 +41,7 @@ var getSelections=function(doc,prev) {
 	}
 
 	if (prev) {
-		//out=arrangeRanges(out,prev);
+		out=arrangeRanges(out,prev);
 	}
 	return out;
 }
