@@ -123,6 +123,7 @@ var CodeMirrorComponent = React.createClass({
 	}
 
 	,focusChanged:function (focused) {
+		if (!this.isMounted())return;//no longer available
 		this.setState({isFocused: focused});
 		this.props.onFocusChange && this.props.onFocusChange(focused);
 	}
