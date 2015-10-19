@@ -1,4 +1,26 @@
-var getSelections=function(doc) {
+var findRange=function(sels,sel) {
+	for (var i=0;i<sels.length;i++) {
+		var s=sels[i];
+		if (JSON.stringify(s)==JSON.stringify(sel)) return i;
+	}
+	return -1;
+}
+//move newly added selected to bottom of array
+//because codemirror:normalizeSelection will sort the ranges
+var arrangeRanges=function(current,prev) {
+	var out=[],newly=[];
+	for (var i=0;i<current.length;i++) {
+		var cur=current[i];
+		if (findRange(prev,cur)==-1) {
+			newly.push(cur);
+		} else {
+			out.push(cur);
+		}
+	}
+	out=out.concat(newly);
+	return out;
+}
+var getSelections=function(doc,prev) {
 	var out=[];
 	var sels=doc.listSelections();
 
@@ -16,6 +38,10 @@ var getSelections=function(doc) {
 			}
 			out.push([from,to]);			
 		}
+	}
+
+	if (prev) {
+		//out=arrangeRanges(out,prev);
 	}
 	return out;
 }
