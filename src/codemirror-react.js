@@ -46,7 +46,7 @@ var CodeMirrorComponent = React.createClass({
   		,lineWrapping:true
   		,readOnly:!!this.props.readOnly
   		,lineNumbers: true
-  		,theme:"ambiance"
+  		,theme:this.props.theme
   		,gutters: ["CodeMirror-linenumbers"]
   		
 		});
@@ -129,6 +129,7 @@ var CodeMirrorComponent = React.createClass({
 	}
 
 	,render:function () {
+		console.log("cm render")
 		return E("span",{ref:"editor"});
 	}
 
