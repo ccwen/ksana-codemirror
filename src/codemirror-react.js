@@ -16,6 +16,7 @@ var applyMarkups=require("./markups").applyMarkups;
 var randomKey=function() {
 	return 'm'+Math.random().toString().substr(2,5);
 }
+var eventKeys=["altKey","ctrlKey","shiftKey","clientX","clientY","pageX","pageY","screenX","screenY","type"];
 var CodeMirrorComponent = React.createClass({
 	displayName :"CodeMirror"
 	,propTypes: {
@@ -73,6 +74,7 @@ var CodeMirrorComponent = React.createClass({
 		if (this.codeMirror&& this.codeMirror.toTextArea) {
 			this.codeMirror.toTextArea();
 		}
+		clearTimeout(this.timermove);
 	}
 
 	,onMouseDown:function(cm,e) {
@@ -127,10 +129,19 @@ var CodeMirrorComponent = React.createClass({
 		this.setState({isFocused: focused});
 		this.props.onFocusChange && this.props.onFocusChange(focused);
 	}
-
+	,onMouseMove:function(e) {
+		if (!this.props.onMouseMove)return;
+		clearTimeout(this.timermove);
+		var ev={};
+		eventKeys.forEach(function(k) {ev[k]=e[k]});
+		this.timermove=setTimeout(function() {
+			this.props.onMouseMove(ev);
+		}.bind(this),100);
+	}
 	,render:function () {
-		console.log("cm render")
-		return E("span",{ref:"editor"});
+		var obj={ref:"editor"};
+		if (this.props.onMouseMove) obj.onMouseMove=this.onMouseMove;
+		return E("span",obj);
 	}
 
 });
