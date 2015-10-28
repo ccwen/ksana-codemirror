@@ -57,6 +57,18 @@ var lineNumberFormatter=function(line){
 
 var unpack=function(r) {
 	var o=[];
+	if (!r.length) return r;
+	if (r.length===1) { //quote
+		o[0]=[r[0][0],r[0][1]];
+		if (typeof o[0][1]==="number") o[0][1]=[r[0][1],r[0][0][1]];//same line
+
+		if (typeof r[0][2]==="string") {
+			o[0][1] = milestone2abs.call(this,r[0][2],r[0][1]);
+		}
+
+		return o;
+	}
+
 	if (r.length!==2)return r;
 	if (typeof r[1]==="number") r[1]=[r[1]];
 	o[0]=[r[0][0],r[0][1]];

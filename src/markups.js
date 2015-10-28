@@ -90,6 +90,9 @@ var extractMarkups=function(doc) {
 			if (!m.hasOwnProperty(key))continue;
 			if (!reservedfields[key] && key[0]!=="_") { //key start with _ will not saved
 				obj[key]=m[key];
+				if (key==="className"&& m[key].indexOf("editingMarker")>-1) {//should not save this class
+					obj[key]=obj[key].replace(/ ?editingMarker ?/,"");
+				}
 			}
 		}
 	}
