@@ -1,12 +1,15 @@
 var CM = require('codemirror');
+
 require('codemirror/addon/display/panel');
 require('codemirror/addon/search/search.js');
 require('codemirror/addon/search/searchcursor.js');
 require('codemirror/addon/dialog/dialog.js');
-
+require('codemirror/addon/hint/show-hint.js');
+require('codemirror/addon/selection/active-line');
 require('./automarkup.js');
+require('./ire-hint.js');
+
 var milestones=require("./milestones");
-//require('codemirror/addon/selection/active-line');
 var React = require('react');
 var ReactDOM = require('react-dom');
 var E=React.createElement;
@@ -49,7 +52,12 @@ var CodeMirrorComponent = React.createClass({
   		,lineNumbers: true
   		,theme:this.props.theme||""
   		,gutters: ["CodeMirror-linenumbers"]
-  		
+  		,lineSeparator:this.props.lineSeparator||null  		
+  		,extraKeys: {
+  			"Ctrl-I": function(cm){
+  				cm.showHint({hint: CM.hint.ire});
+  			}
+  		}
 		});
 
 		this.codeMirror.setOption("lineNumberFormatter",milestones.lineNumberFormatter.bind(this));
