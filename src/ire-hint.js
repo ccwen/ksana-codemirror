@@ -26,12 +26,15 @@ var IRE=require("ksana-ire");
     var list=candidates.map(function(candidate){
       var displayText=candidate;
       var text=String.fromCharCode(0x2fff)+displayText+tofind+"卍";
-      return {text:text,displayText:displayText+"　",hint:hint}
-    })
+      return {text:text,displayText:displayText,hint:hint}
+    });
 
-    var text=String.fromCharCode(0x2fff)+tofind+"卍";
-    var first={text:text,displayText:tofind+"　",hint:hint};
-    list.unshift(first);
+    var parts=IRE.getUnicodeParts(tofind);
+    parts.map(function(part){
+      var text=String.fromCharCode(0x2fff)+tofind+part+"卍";
+      var first={text:text,displayText:tofind+part+"●",hint:hint};
+      list.unshift(first);
+    });
 
     return {list: list, from: {line:cur.line,ch:cur.ch-1}, to:cur};
   });
