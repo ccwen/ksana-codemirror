@@ -1,6 +1,6 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
-var IRE=require("ksana-ire");
+//if (var IRE=require("ksana-ire");
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("codemirror"));
