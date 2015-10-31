@@ -41,8 +41,8 @@ var CodeMirrorComponent = React.createClass({
 	}
 	,componentDidMount:function () {
 		if (this.props.enableIRE) {
-			var name='./ire-hint.js';
-			require(name);
+			//var name='./ire-hint.js';
+			//require(name);
 		}
 		var textareaNode = ReactDOM.findDOMNode(this.refs.editor);
 		this.codeMirror = CM(textareaNode, {
