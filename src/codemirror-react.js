@@ -7,7 +7,7 @@ require('codemirror/addon/dialog/dialog.js');
 require('codemirror/addon/hint/show-hint.js');
 require('codemirror/addon/selection/active-line');
 require('./automarkup.js');
-require('./ire-hint.js');
+
 
 var milestones=require("./milestones");
 var React = require('react');
@@ -40,6 +40,10 @@ var CodeMirrorComponent = React.createClass({
 		this.props.onCursorActivity&&this.props.onCursorActivity(cm);
 	}
 	,componentDidMount:function () {
+		if (this.props.enableIRE) {
+			var name='./ire-hint.js';
+			require(name);
+		}
 		var textareaNode = ReactDOM.findDOMNode(this.refs.editor);
 		this.codeMirror = CM(textareaNode, {
   		value: this.props.value
