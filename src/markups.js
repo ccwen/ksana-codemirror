@@ -24,8 +24,8 @@ var applyBookmark=function(cm,bookmark) {
 var applyMarkups=function(cm,markups,clear) {
 	if (clear) clearAllMarks(cm.getDoc());
 	for (var key in markups) {
+		if (markups[key].handle) continue; //already in view
 		var m=markups[key];
-		if (m.handle) continue; //already in view
 		var fromch=m.from[0],fromline=m.from[1];
 
 		if (typeof m.to==="undefined") {
@@ -49,7 +49,7 @@ var applyMarkups=function(cm,markups,clear) {
 			if (reservedfields[i]) delete m[i];
 		}
 		m.key=key; //probably from firebase uid
-		m.handle=cm.markText({line:fromline,ch:fromch},{line:toline,ch:toch}, m );		
+		m.handle=cm.markText({line:fromline,ch:fromch},{line:toline,ch:toch}, m );
 	}
 }
 
@@ -64,39 +64,43 @@ var extractBookmark=function(textmarker, pos) {
 	}
 	return out;
 }
+
+var textMarker2json=function(m) {
+	if (m.clearOnEnter) return; //temporary markup will not be saved
+	var obj={};
+	var pos=m.find();
+	if (m.type==="bookmark") {
+		obj=extractBookmark(m,pos);
+	} else {
+		obj.from=[pos.from.ch,pos.from.line];
+		if (pos.to) {
+			obj.to=pos.to.ch;
+			if (pos.from.line!==pos.to.line) to=[to,pos.to.line];
+		} else {
+			console.error("markup missing to");
+		}
+	}
+
+	for (var key in m) {
+		if (!m.hasOwnProperty(key))continue;
+		if (!reservedfields[key] && key[0]!=="_") { //key start with _ will not saved
+			obj[key]=m[key];
+			if (key==="className"&& m[key].indexOf("editingMarker")>-1) {//should not save this class
+				obj[key]=obj[key].replace(/ ?editingMarker ?/,"");
+			}
+		}
+	}
+}
 var extractMarkups=function(doc) {
 	var marks=doc.getAllMarks();
 	var markups={};
-
 	for (var i=0;i<marks.length;i++) {
-		var obj={};
 		var m=marks[i];
-		if (m.clearOnEnter) continue; //temporary markup will not be saved
-		var pos=m.find();
-		if (m.type==="bookmark") {
-			obj=extractBookmark(m,pos);
-		} else {
-			obj.from=[pos.from.ch,pos.from.line];
-			if (pos.to) {
-				obj.to=pos.to.ch;
-				if (pos.from.line!==pos.to.line) to=[to,pos.to.line];
-			} else {
-				console.error("markup missing to");
-			}
-		}
-		markups[m.key]=obj;
 
-		for (var key in m) {
-			if (!m.hasOwnProperty(key))continue;
-			if (!reservedfields[key] && key[0]!=="_") { //key start with _ will not saved
-				obj[key]=m[key];
-				if (key==="className"&& m[key].indexOf("editingMarker")>-1) {//should not save this class
-					obj[key]=obj[key].replace(/ ?editingMarker ?/,"");
-				}
-			}
-		}
+		var obj=textMarker2json(m);
+		if (obj) markups[m.key]=obj;		
 	}
 	return markups;
 }
 
-module.exports={applyMarkups:applyMarkups, extractMarkups:extractMarkups};
+module.exports={applyMarkups:applyMarkups, extractMarkups:extractMarkups,textMarker2json:textMarker2json};

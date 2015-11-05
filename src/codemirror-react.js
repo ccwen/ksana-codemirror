@@ -114,7 +114,7 @@ var CodeMirrorComponent = React.createClass({
 	,getCodeMirror:function () {
 		return this.codeMirror;
 	}
-
+/*
 	,markText:function(opts) {
 		var doc=this.codeMirror.getDoc();
 		var selections=doc.listSelections();
@@ -128,7 +128,7 @@ var CodeMirrorComponent = React.createClass({
 			this.codeMirror.markText(sel.anchor,sel.head, opts );	
 		}
 	}
-
+*/
 	,focus:function () {
 		if (this.codeMirror) {
 			this.codeMirror.focus();
