@@ -8,4 +8,5 @@ module.exports={
 	,Component:require("./codemirror-react")
 	,milestones:require("./milestones")
 	,textMarker2json:require("./markups").textMarker2json
+	,json2textMarker:require("./markups").json2textMarker
 };

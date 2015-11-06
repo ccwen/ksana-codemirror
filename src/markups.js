@@ -21,35 +21,38 @@ var applyBookmark=function(cm,bookmark) {
 	return null;
 }
 
+var json2textMarker=function(cm,key,m) {
+	var fromch=m.from[0],fromline=m.from[1];
+
+	if (typeof m.to==="undefined") {
+		m.key=key;
+		applyBookmark(cm,m).handle;
+		delete m.from;
+		return;
+	}
+
+	if (typeof m.to==="number") {
+		toch=m.to;
+		toline=fromline;
+	}  else {
+		toch=m.to[0];
+		toline=m.to[1];
+	}
+	delete m.from;
+	delete m.to;
+
+	for (var i in m) {
+		if (reservedfields[i]) delete m[i];
+	}
+	m.key=key; //probably from firebase uid
+	m.handle=cm.markText({line:fromline,ch:fromch},{line:toline,ch:toch}, m );
+}
 var applyMarkups=function(cm,markups,clear) {
 	if (clear) clearAllMarks(cm.getDoc());
 	for (var key in markups) {
 		if (markups[key].handle) continue; //already in view
 		var m=markups[key];
-		var fromch=m.from[0],fromline=m.from[1];
-
-		if (typeof m.to==="undefined") {
-			m.key=key;
-			applyBookmark(cm,m).handle;
-			delete m.from;
-			continue;
-		}
-
-		if (typeof m.to==="number") {
-			toch=m.to;
-			toline=fromline;
-		}  else {
-			toch=m.to[0];
-			toline=m.to[1];
-		}
-		delete m.from;
-		delete m.to;
-
-		for (var i in m) {
-			if (reservedfields[i]) delete m[i];
-		}
-		m.key=key; //probably from firebase uid
-		m.handle=cm.markText({line:fromline,ch:fromch},{line:toline,ch:toch}, m );
+		json2textMarker.call(this,cm,key,m);
 	}
 }
 
@@ -103,4 +106,5 @@ var extractMarkups=function(doc) {
 	return markups;
 }
 
-module.exports={applyMarkups:applyMarkups, extractMarkups:extractMarkups,textMarker2json:textMarker2json};
+module.exports={applyMarkups:applyMarkups, extractMarkups:extractMarkups,
+	json2textMarker:json2textMarker,textMarker2json:textMarker2json};
