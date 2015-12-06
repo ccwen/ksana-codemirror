@@ -27,7 +27,6 @@ var json2textMarker=function(cm,key,m) {
 	if (typeof m.to==="undefined") {
 		m.key=key;
 		applyBookmark(cm,m).handle;
-		delete m.from;
 		return;
 	}
 
@@ -38,8 +37,6 @@ var json2textMarker=function(cm,key,m) {
 		toch=m.to[0];
 		toline=m.to[1];
 	}
-	delete m.from;
-	delete m.to;
 
 	for (var i in m) {
 		if (reservedfields[i]) delete m[i];
@@ -71,18 +68,6 @@ var extractBookmark=function(textmarker, pos) {
 var textMarker2json=function(m) {
 	if (m.clearOnEnter) return; //temporary markup will not be saved
 	var obj={};
-	var pos=m.find();
-	if (m.type==="bookmark") {
-		obj=extractBookmark(m,pos);
-	} else {
-		obj.from=[pos.from.ch,pos.from.line];
-		if (pos.to) {
-			obj.to=pos.to.ch;
-			if (pos.from.line!==pos.to.line) to=[to,pos.to.line];
-		} else {
-			console.error("markup missing to");
-		}
-	}
 
 	for (var key in m) {
 		if (!m.hasOwnProperty(key))continue;
@@ -93,6 +78,21 @@ var textMarker2json=function(m) {
 			}
 		}
 	}
+
+	//overwrite from and to
+	var pos=m.find();
+	if (m.type==="bookmark") {
+		obj=extractBookmark(m,pos);
+	} else {
+		obj.from=[pos.from.ch,pos.from.line];
+		if (pos.to) {
+			obj.to=pos.to.ch;
+			if (pos.from.line!==pos.to.line) to=[to,pos.to.line];
+		} else {
+			//console.error("markup missing to");
+		}
+	}	
+	return obj;
 }
 var extractMarkups=function(doc) {
 	var marks=doc.getAllMarks();
