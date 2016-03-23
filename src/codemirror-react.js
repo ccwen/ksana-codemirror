@@ -67,7 +67,7 @@ var CodeMirrorComponent = React.createClass({
 
 		//CM.fromTextArea(textareaNode, this.props.options);
 		if (this.props.onBeforeCopy) this.codeMirror.on('beforeCopyToClipboard', this.props.onBeforeCopy);
-		this.codeMirror.getDoc().on('change', this.props.onChange);
+		this.props.onChange && this.codeMirror.getDoc().on('change', this.props.onChange);
 		if (this.props.onBeforeChange) this.codeMirror.on('beforeChange', this.props.onBeforeChange);
 		this.codeMirror.on('focus', this.focusChanged.bind(this, true));
 		this.codeMirror.on('blur', this.focusChanged.bind(this, false));
