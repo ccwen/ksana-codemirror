@@ -52,10 +52,10 @@ var CodeMirrorComponent = React.createClass({
   		,undoDepth: Infinity
   		,lineWrapping:true
   		,readOnly:!!this.props.readOnly
-  		,lineNumbers: true
   		,theme:this.props.theme||""
-  		,gutters: ["CodeMirror-linenumbers"]
-  		,lineSeparator:this.props.lineSeparator||null  		
+  		//,lineNumbers: true
+  		//,gutters: ["CodeMirror-linenumbers"]
+  		//,lineSeparator:this.props.lineSeparator||null  		
   		,extraKeys: {
   			"Ctrl-I": function(cm){
   				cm.showHint({hint: CM.hint.ire});
@@ -73,6 +73,9 @@ var CodeMirrorComponent = React.createClass({
 		this.codeMirror.on('blur', this.focusChanged.bind(this, false));
 		this.codeMirror.on('cursorActivity',this.cursorActivity);
 		this.codeMirror.on('mousedown',this.onMouseDown);
+		this.props.onKeyUp && this.codeMirror.on('keyup',this.props.onKeyUp);
+		this.props.onKeyDown && this.codeMirror.on('keydown',this.props.onKeyDown);
+		this.props.onKeyPress&& this.codeMirror.on('keypress',this.props.onKeyPress);
 
 		setTimeout(function(){
 			this.props.markups&&applyMarkups(this.codeMirror,this.props.markups,true);
