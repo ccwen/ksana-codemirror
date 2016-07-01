@@ -98,9 +98,12 @@ var CodeMirrorComponent = React.createClass({
 	,shouldComponentUpdate:function(nextProps) {
 		var update= (nextProps.value!==this.props.value || nextProps.history!==this.props.history 
 				||nextProps.markups!==this.props.markups);
+
+		if (nextProps.value!==this.props.value) {
+			this.codeMirror.getDoc().setValue(nextProps.value);
+		}
 		return update;
 	}
-
 	,componentWillReceiveProps:function (nextProps) {
 		if (this.codeMirror) {
 
@@ -113,7 +116,6 @@ var CodeMirrorComponent = React.createClass({
 			}
 		}
 	}
-
 	,getCodeMirror:function () {
 		return this.codeMirror;
 	}
