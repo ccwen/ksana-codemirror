@@ -9,7 +9,7 @@ require('codemirror/addon/selection/active-line');
 require('./automarkup.js');
 
 
-var milestones=require("./milestones");
+//var milestones=require("./milestones");
 var React = require('react');
 var ReactDOM = require('react-dom');
 var E=React.createElement;
@@ -51,6 +51,8 @@ var CodeMirrorComponent = React.createClass({
   		,styleActiveLine:true
   		,undoDepth: Infinity
   		,lineWrapping:true
+  		,lineNumbers:this.props.lineNumbers
+  		,lineNumberFormatter:this.props.lineNumberFormatter
   		,readOnly:!!this.props.readOnly
   		,theme:this.props.theme||""
   		//,lineNumbers: true
@@ -63,7 +65,7 @@ var CodeMirrorComponent = React.createClass({
   		}
 		});
 
-		this.codeMirror.setOption("lineNumberFormatter",milestones.lineNumberFormatter.bind(this));
+		//this.codeMirror.setOption("lineNumberFormatter",milestones.lineNumberFormatter.bind(this));
 
 		//CM.fromTextArea(textareaNode, this.props.options);
 		if (this.props.onBeforeCopy) this.codeMirror.on('beforeCopyToClipboard', this.props.onBeforeCopy);
@@ -73,6 +75,7 @@ var CodeMirrorComponent = React.createClass({
 		this.codeMirror.on('blur', this.focusChanged.bind(this, false));
 		this.codeMirror.on('cursorActivity',this.cursorActivity);
 		this.codeMirror.on('mousedown',this.onMouseDown);
+		this.codeMirror.on('viewportChange',this.onViewportChange);
 		this.props.onKeyUp && this.codeMirror.on('keyup',this.props.onKeyUp);
 		this.props.onKeyDown && this.codeMirror.on('keydown',this.props.onKeyDown);
 		this.props.onKeyPress&& this.codeMirror.on('keypress',this.props.onKeyPress);
@@ -95,6 +98,9 @@ var CodeMirrorComponent = React.createClass({
 		this.props.onMouseDown&&this.props.onMouseDown(cm,e);
 	}
 
+	,onViewportChange:function(cm,from,to) {
+		this.props.onViewportChange&&this.props.onViewportChange(cm,from,to);	
+	}
 	,shouldComponentUpdate:function(nextProps) {
 		var update= (nextProps.value!==this.props.value || nextProps.history!==this.props.history 
 				||nextProps.markups!==this.props.markups);
