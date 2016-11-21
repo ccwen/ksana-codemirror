@@ -8,13 +8,9 @@ require('codemirror/addon/hint/show-hint.js');
 require('codemirror/addon/selection/active-line');
 require('./automarkup.js');
 
-
-//var milestones=require("./milestones");
 var React = require('react');
 var ReactDOM = require('react-dom');
 var E=React.createElement;
-
-var applyMarkups=require("./markups").applyMarkups;
 
 var randomKey=function() {
 	return 'm'+Math.random().toString().substr(2,5);
@@ -31,14 +27,6 @@ var CodeMirrorComponent = React.createClass({
 		value: React.PropTypes.string,
 		onBeforeCopy:React.PropTypes.func
 	}
-	,getInitialState:function () {
-		return {
-			isFocused: false
-		};
-	}
-	,cursorActivity:function(cm) { 
-		this.props.onCursorActivity&&this.props.onCursorActivity(cm);
-	}
 	,componentDidMount:function () {
 		if (typeof window.IRE!=="undefined") {
 			require("./ire-hint");
@@ -46,8 +34,6 @@ var CodeMirrorComponent = React.createClass({
 		var textareaNode = ReactDOM.findDOMNode(this.refs.editor);
 		this.codeMirror = CM(textareaNode, {
   		value: this.props.value
-  		//,mode:  "javascript"
-  		//inputStyle:"contenteditable",
   		,styleActiveLine:true
   		,undoDepth: Infinity
   		,lineWrapping:true
@@ -65,31 +51,31 @@ var CodeMirrorComponent = React.createClass({
   		}
 		});
 
-		//this.codeMirror.setOption("lineNumberFormatter",milestones.lineNumberFormatter.bind(this));
-
 		//CM.fromTextArea(textareaNode, this.props.options);
-		if (this.props.onBeforeCopy) this.codeMirror.on('beforeCopyToClipboard', this.props.onBeforeCopy);
+		this.props.onBeforeCopy&& this.codeMirror.on('beforeCopyToClipboard', this.props.onBeforeCopy);
 		this.props.onChange && this.codeMirror.getDoc().on('change', this.props.onChange);
-		if (this.props.onBeforeChange) this.codeMirror.on('beforeChange', this.props.onBeforeChange);
-		this.codeMirror.on('focus', this.focusChanged.bind(this, true));
-		this.codeMirror.on('blur', this.focusChanged.bind(this, false));
-		this.codeMirror.on('cursorActivity',this.cursorActivity);
-		this.codeMirror.on('mousedown',this.onMouseDown);
-		this.codeMirror.on('viewportChange',this.onViewportChange);
+		this.props.onBeforeChange&& this.codeMirror.on('beforeChange', this.props.onBeforeChange);
+		//this.codeMirror.on('focus', this.focusChanged.bind(this, true));
+		//this.codeMirror.on('blur', this.focusChanged.bind(this, false));
+		this.props.onCursorActivity&&this.codeMirror.on('cursorActivity',this.props.onCursorActivity);
+		this.props.onMouseDown&&this.codeMirror.on('mousedown',this.props.onMouseDown);
+		this.props.onViewportChange&&this.codeMirror.on('viewportChange',this.props.onViewportChange);
 
-		this.codeMirror.on('copy',this.props.onCopy);
-		this.codeMirror.on('cut',this.props.onCut);
-		this.codeMirror.on('paste',this.props.onPaste);
+		this.props.onCopy&&this.codeMirror.on('copy',this.props.onCopy);
+		this.props.onCut && this.codeMirror.on('cut',this.props.onCut);
+		this.props.onPaste && this.codeMirror.on('paste',this.props.onPaste);
 
 
 		this.props.onKeyUp && this.codeMirror.on('keyup',this.props.onKeyUp);
 		this.props.onKeyDown && this.codeMirror.on('keydown',this.props.onKeyDown);
 		this.props.onKeyPress&& this.codeMirror.on('keypress',this.props.onKeyPress);
 
+		/*
 		setTimeout(function(){
-			this.props.markups&&applyMarkups(this.codeMirror,this.props.markups,true);
-			this.props.onMarkupReady&&this.props.onMarkupReady(this.codeMirror);
+			//this.props.markups&&applyMarkups(this.codeMirror,this.props.markups,true);
+			//this.props.onMarkupReady&&this.props.onMarkupReady(this.codeMirror);
 		}.bind(this),30);//need to wait for this.codeMirror.react ready (dirty hack)
+		*/
 	}
 
 	,componentWillUnmount:function () {
@@ -100,13 +86,6 @@ var CodeMirrorComponent = React.createClass({
 		clearTimeout(this.timermove);
 	}
 
-	,onMouseDown:function(cm,e) {
-		this.props.onMouseDown&&this.props.onMouseDown(cm,e);
-	}
-
-	,onViewportChange:function(cm,from,to) {
-		this.props.onViewportChange&&this.props.onViewportChange(cm,from,to);	
-	}
 	,shouldComponentUpdate:function(nextProps) {
 		var update= (nextProps.value!==this.props.value || nextProps.history!==this.props.history 
 				||nextProps.markups!==this.props.markups);
@@ -118,11 +97,9 @@ var CodeMirrorComponent = React.createClass({
 	}
 	,componentWillReceiveProps:function (nextProps) {
 		if (this.codeMirror) {
-
 			if (this.props.history !== nextProps.history) {
 				//this.codeMirror.setHistory(nextProps.history);
 			}
-
 			if (this.props.markups !== nextProps.markups) {
 				nextProps.markups&&applyMarkups(this.codeMirror,nextProps.markups);
 			}
@@ -130,32 +107,6 @@ var CodeMirrorComponent = React.createClass({
 	}
 	,getCodeMirror:function () {
 		return this.codeMirror;
-	}
-/*
-	,markText:function(opts) {
-		var doc=this.codeMirror.getDoc();
-		var selections=doc.listSelections();
-		
-		for (var i=0;i<selections.length;i++) {
-			var sel=selections[i];
-			if (sel.anchor===sel.head) continue; //empty
-			if (typeof opts.key!=="string") {
-				opts.key=randomKey();
-			}
-			this.codeMirror.markText(sel.anchor,sel.head, opts );	
-		}
-	}
-*/
-	,focus:function () {
-		if (this.codeMirror) {
-			this.codeMirror.focus();
-		}
-	}
-
-	,focusChanged:function (focused) {
-		if (!this.isMounted())return;//no longer available
-		this.setState({isFocused: focused});
-		this.props.onFocusChange && this.props.onFocusChange(focused);
 	}
 	,onMouseMove:function(e) {
 		if (!this.props.onMouseMove)return;
@@ -171,7 +122,6 @@ var CodeMirrorComponent = React.createClass({
 		if (this.props.onMouseMove) obj.onMouseMove=this.onMouseMove;
 		return E("span",obj);
 	}
-
 });
 
 module.exports = CodeMirrorComponent;
