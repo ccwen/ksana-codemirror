@@ -41,6 +41,7 @@ var CodeMirrorComponent = React.createClass({
   		,lineNumberFormatter:this.props.lineNumberFormatter
   		,readOnly:!!this.props.readOnly
   		,theme:this.props.theme||""
+  		,scrollbarStyle:this.props.scrollbarStyle
   		//,lineNumbers: true
   		//,gutters: ["CodeMirror-linenumbers"]
   		//,lineSeparator:this.props.lineSeparator||null  		
@@ -118,9 +119,9 @@ var CodeMirrorComponent = React.createClass({
 		}.bind(this),100);
 	}
 	,render:function () {
-		var obj={ref:"editor"};
+		var obj={ref:"editor",style:{position:"relative"}};
 		if (this.props.onMouseMove) obj.onMouseMove=this.onMouseMove;
-		return E("span",obj);
+		return E("div",obj);
 	}
 });
 
