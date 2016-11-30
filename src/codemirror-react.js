@@ -41,7 +41,7 @@ var CodeMirrorComponent = React.createClass({
   		,lineNumberFormatter:this.props.lineNumberFormatter
   		,readOnly:!!this.props.readOnly
   		,theme:this.props.theme||""
-  		,scrollbarStyle:this.props.scrollbarStyle
+  		,scrollbarStyle:this.props.scrollbarStyle||"native"
   		//,lineNumbers: true
   		//,gutters: ["CodeMirror-linenumbers"]
   		//,lineSeparator:this.props.lineSeparator||null  		
