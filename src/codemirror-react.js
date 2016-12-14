@@ -36,7 +36,6 @@ var CodeMirrorComponent = React.createClass({
   			"Ctrl-I": function(cm){
   				cm.showHint({hint: CM.hint.ire});
   			}},this.props.extraKeys||{});
-		console.log(extraKeys)
 		this.codeMirror = CM(textareaNode, {
   		value: this.props.value
   		,styleActiveLine:true
