@@ -32,6 +32,11 @@ var CodeMirrorComponent = React.createClass({
 			require("./ire-hint");
 		}
 		var textareaNode = ReactDOM.findDOMNode(this.refs.editor);
+		var extraKeys=Object.assign({},{
+  			"Ctrl-I": function(cm){
+  				cm.showHint({hint: CM.hint.ire});
+  			}},this.props.extraKeys||{});
+		console.log(extraKeys)
 		this.codeMirror = CM(textareaNode, {
   		value: this.props.value
   		,styleActiveLine:true
@@ -45,11 +50,7 @@ var CodeMirrorComponent = React.createClass({
   		//,lineNumbers: true
   		//,gutters: ["CodeMirror-linenumbers"]
   		//,lineSeparator:this.props.lineSeparator||null  		
-  		,extraKeys: {
-  			"Ctrl-I": function(cm){
-  				cm.showHint({hint: CM.hint.ire});
-  			}
-  		}
+  		,extraKeys: extraKeys
 		});
 
 		//CM.fromTextArea(textareaNode, this.props.options);
