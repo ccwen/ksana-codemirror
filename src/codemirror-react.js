@@ -56,8 +56,8 @@ var CodeMirrorComponent = React.createClass({
 		this.props.onBeforeCopy&& this.codeMirror.on('beforeCopyToClipboard', this.props.onBeforeCopy);
 		this.props.onChange && this.codeMirror.getDoc().on('change', this.props.onChange);
 		this.props.onBeforeChange&& this.codeMirror.on('beforeChange', this.props.onBeforeChange);
-		//this.codeMirror.on('focus', this.focusChanged.bind(this, true));
-		//this.codeMirror.on('blur', this.focusChanged.bind(this, false));
+		this.props.onFocus&&this.codeMirror.on('focus', this.props.onFocus);
+		this.props.onBlur&&this.codeMirror.on('blur', this.props.onBlur);
 		this.props.onCursorActivity&&this.codeMirror.on('cursorActivity',this.props.onCursorActivity);
 		this.props.onMouseDown&&this.codeMirror.on('mousedown',this.props.onMouseDown);
 		this.props.onViewportChange&&this.codeMirror.on('viewportChange',this.props.onViewportChange);
